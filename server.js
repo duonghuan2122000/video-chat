@@ -60,7 +60,7 @@ app.get('/:room', (req, res) => {
 io.on('connection', socket => {
 
     // sự kiện tham gia phòng trong socket
-    socket.on("join-room", (roomId, userId) => {
+    socket.on("join-room", (roomId, userId, userName) => {
         // thực hiện join room
         socket.join(roomId);
 
