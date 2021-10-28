@@ -21,7 +21,7 @@ const user = prompt("Nhập tên của bạn");
 var peer = new Peer(undefined, {
 	path: "/peerjs",
 	host: "/",
-	port: 3000
+	port: 443
 });
 
 // sự kiện peer mở kết nối
