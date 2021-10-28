@@ -1,33 +1,18 @@
-/**
- * server.js
- * @author CreatedBy: dbhuan (04/10/2021)
- */
-
-/**
- * import fw expressjs  
- * https://expressjs.com/
- * @author CreatedBy: dbhuan (04/10/2021)
- */
 const express = require('express');
 const http = require('http');
 const { v4: uuidv4 } = require('uuid');
-
-// định nghĩa port của ứng dụng
+const { ExpressPeerServer } = require('peer');
 const PORT = process.env.PORT || 3000;
-
-// khởi tạo app
 const app = express();
 const server = http.createServer(app);
-
 const io = require('socket.io')(server, {
-    cors: {
-        origin: "*"
-    }
+	cors: {
+		origin: "*"
+	}
 });
-const { ExpressPeerServer } = require('peer');
 
 const peerServer = ExpressPeerServer(server, {
-    debug: true
+	debug: true
 });
 
 // thiết lập view engine cho ứng dụng
@@ -43,8 +28,8 @@ app.use(express.static("public"));
  * GET: /
  * Thực hiện redirect về trang /{00000000-0000-0000-0000-000000000000}
  */
-app.get("/", (req, res) => {
-    res.redirect(`/${uuidv4()}`);
+app.get("/", (_, res) => {
+	res.redirect(`/${uuidv4()}`);
 });
 
 /**
@@ -52,25 +37,21 @@ app.get("/", (req, res) => {
  * Render giao diện video chat
  */
 app.get('/:room', (req, res) => {
-    let roomId = req.params.room;
-    res.render('room', { roomId });
+	let roomId = req.params.room;
+	res.render('room', { roomId });
 });
 
 // thiết lập kết nối connection
 io.on('connection', socket => {
 
-    // sự kiện tham gia phòng trong socket
-    socket.on("join-room", (roomId, userId, userName) => {
-        // thực hiện join room
-        socket.join(roomId);
-
-        // broadcast tất cả các thành viên trong phòng có user mới
-        socket.to(roomId).emit("user-connected", userId);
-
-        socket.on("message", (message) => {
-            io.to(roomId).emit("createMessage", message, userName);
-        });
-    });
+	// sự kiện tham gia phòng trong socket
+	socket.on("join-room", (roomId, userId) => {
+		socket.join(roomId);
+		socket.to(roomId).emit("user-connected", userId);
+		socket.on('disconnect', () => {
+			socket.to(roomId).emit("user-disconnected", userId);
+		})
+	})
 });
 
 // lắng nghe tại địa chỉ có port {PORT}
