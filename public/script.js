@@ -15,13 +15,13 @@ const myVideo = document.createElement("video");
 // tắt tiếng video
 myVideo.muted = true;
 
-const user = prompt("Enter your name");
+const user = prompt("Nhập tên của bạn");
 
 // khởi tạo peer (WebRTC)
 var peer = new Peer(undefined, {
     path: "/peerjs",
     host: "/",
-    port: 80
+    port: 443
 });
 
 /**
@@ -123,9 +123,27 @@ stopVideo.addEventListener("click", () => {
 
 inviteButton.addEventListener("click", (e) => {
     prompt(
-        "Copy this link and send it to people you want to meet with",
+        "Sao chép link này và gửi cho người khác",
         window.location.href
     );
+});
+
+let text = document.querySelector("#chat_message");
+let send = document.getElementById("send");
+let messages = document.querySelector(".messages");
+
+send.addEventListener("click", (e) => {
+  if (text.value.length !== 0) {
+    socket.emit("message", text.value);
+    text.value = "";
+  }
+});
+
+text.addEventListener("keydown", (e) => {
+  if (e.key === "Enter" && text.value.length !== 0) {
+    socket.emit("message", text.value);
+    text.value = "";
+  }
 });
 
 socket.on("createMessage", (message, userName) => {

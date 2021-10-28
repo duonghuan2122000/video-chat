@@ -66,7 +66,11 @@ io.on('connection', socket => {
 
         // broadcast tất cả các thành viên trong phòng có user mới
         socket.to(roomId).emit("user-connected", userId);
-    })
+
+        socket.on("message", (message) => {
+            io.to(roomId).emit("createMessage", message, userName);
+        });
+    });
 });
 
 // lắng nghe tại địa chỉ có port {PORT}
