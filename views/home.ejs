@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Home</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: sans-serif;
+    }
+
+    button {
+      cursor: pointer;
+      border-radius: 8px;
+      border: none;
+      outline: none;
+    }
+
+    .container {
+      width: 100vw;
+      height: 100vh;
+      background-image: url("https://images.pexels.com/photos/3183150/pexels-photo-3183150.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=1800");
+      background-size: cover;
+      background-position: center;
+    }
+
+    .box {
+      padding: 20px;
+      display: inline-block;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      min-width: 500px;
+      border-radius: 8px;
+      background-color: #fff;
+      min-height: 160px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+    }
+
+    .box__title {
+      margin-bottom: 8px;
+    }
+
+    .box__header {
+      margin-bottom: 10px;
+    }
+
+    .box__body {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .box__new-metting {
+      padding: 14px 20px;
+      color: #fff;
+      background-color: #5E76F1;
+      font-size: 16px;
+      margin-right: 8px;
+    }
+
+    .box__form {
+      position: relative;
+    }
+
+    .box__input {
+      padding: 14px 20px;
+      padding-right: 48px;
+      border-radius: 8px;
+      outline: none;
+      border: 1px solid #999;
+    }
+
+    .box__join-meeting {
+      position: absolute;
+      top: 50%;
+      right: 0;
+      transform: translateY(-50%);
+      display: none;
+      color: #5E76F1;
+      background-color: transparent;
+      padding: 14px;
+    }
+
+    .box__input:not(:placeholder-shown)~.box__join-meeting {
+      display: inline-block;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <div class="box">
+      <div class="box__header">
+        <h2 class="box__title">Video meetings free for everyone</h2>
+      </div>
+      <div class="box__body">
+        <button class="box__new-metting">
+          New meeting
+        </button>
+        <form class="box__form">
+          <input placeholder="Enter a code" class="box__input" />
+          <button class="box__join-meeting">Join</button>
+        </form>
+      </div>
+    </div>
+  </div>
+  <script>
+    const buttonNewMeeting = document.querySelector('.box__new-metting');
+    const formJoinMeeting = document.querySelector('.box__form');
+    buttonNewMeeting.addEventListener('click', () => {
+      window.location.replace('/create');
+    });
+    formJoinMeeting.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const roomCode = document.querySelector('.box__input').value;
+      window.location.replace(`/${roomCode}`);
+    })
+  </script>
+</body>
+
+</html>
