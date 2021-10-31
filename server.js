@@ -10,6 +10,7 @@ const io = require('socket.io')(server, {
 		origin: "*"
 	}
 });
+const rooms = [];
 
 const peerServer = ExpressPeerServer(server, {
 	debug: true
@@ -24,12 +25,18 @@ app.use("/peerjs", peerServer);
 // thiết lập đường dẫn cho public static folder
 app.use(express.static("public"));
 
+app.get('/', (_, res) => {
+	res.render('home');
+})
+
 /**
  * GET: /
  * Thực hiện redirect về trang /{00000000-0000-0000-0000-000000000000}
  */
-app.get("/", (_, res) => {
-	res.redirect(`/${uuidv4()}`);
+app.get("/create", (_, res) => {
+	const roomId = uuidv4();
+	rooms.push(roomId);
+	res.redirect(`/${roomId}`);
 });
 
 /**
@@ -38,7 +45,11 @@ app.get("/", (_, res) => {
  */
 app.get('/:room', (req, res) => {
 	let roomId = req.params.room;
-	res.render('room', { roomId });
+	if (rooms.includes(roomId)) {
+		res.render('room', { roomId });
+	} else {
+		res.render('404')
+	}
 });
 
 // thiết lập kết nối connection

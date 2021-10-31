@@ -1,32 +1,21 @@
-/**
- * Script xử lý luồng video call dưới client
- * @author CreatedBy: dbhuan (07/10/2021)
- */
-
-// khởi tạo socket client
 const socket = io();
-
-// lấy ele khu vực hiển thị video
 const videoGrid = document.getElementById('video-grid');
-
-// Tạo ele video
 const myVideo = document.createElement("video");
-
-// tắt tiếng video
 myVideo.muted = true;
 
 const user = prompt("Nhập tên của bạn");
-
-// khởi tạo peer (WebRTC)
-var peer = new Peer(undefined, {
+let userId;
+const peer = new Peer(undefined, {
 	path: "/peerjs",
 	host: "/",
 	port: 443
 });
 
+
 // sự kiện peer mở kết nối
 peer.on("open", id => {
-	socket.emit("join-room", ROOM_ID, id, user);
+	userId = id;
+	socket.emit("join-room", ROOM_ID, userId, user);
 });
 
 /**
@@ -42,59 +31,46 @@ navigator.mediaDevices.getUserMedia({
 })
 	.then((stream) => {
 		myVideoStream = stream;
-		addVideoStream(myVideo, stream);
+		addVideoStream({ video: myVideo, stream: myVideoStream, userId });
 
 		// bắt sự kiện của peer
 		peer.on("call", call => {
 			call.answer(stream);
-
 			const video = document.createElement("video");
-
 			call.on("stream", userVideoStream => {
-				addVideoStream(video, userVideoStream);
+				addVideoStream({ video, stream: userVideoStream, userId: call.peer });
 			})
 		});
 
 		// bắt sự kiện user kết nối
 		socket.on("user-connected", userId => {
-			connectToNewUser(userId, stream);
+			const call = peer.call(userId, stream);
+			const video = document.createElement("video");
+			call.on("stream", userVideoStream => {
+				addVideoStream({ video, stream: userVideoStream, userId });
+			});
 		});
 		// bắt sự kiện user ngắt kết nối
 		socket.on("user-disconnected", userId => {
-			disconnectUser(userId);
+			const videoEls = Array.from(document.querySelectorAll(`[data-userId="${userId}"]`));
+			videoEls.forEach(video => video.remove());
 		});
+	}).catch(() => {
+		alert("Bật cam là F5 lại trang web");
 	});
 
-const connectToNewUser = (userId, stream) => {
-	const call = peer.call(userId, stream);
-	const video = document.createElement("video");
-	video.setAttribute('data-userId', userId);
-	call.on("stream", userVideoStream => {
-		addVideoStream(video, userVideoStream);
-	});
-}
 
-const disconnectUser = (userId) => {
-	const videoEls = Array.from(document.querySelectorAll(`[data-userId="${userId}"]`));
-	videoEls.forEach(video => video.remove());
-}
-
-/**
- * Thêm luồng video
- * @author CreatedBy: dbhuan (07/10/2021)
- */
-const addVideoStream = (video, stream) => {
-	// thiết lập luồng cho video
+const addVideoStream = ({ video, stream, userId }) => {
 	video.srcObject = stream;
+	video.setAttribute('data-userId', userId)
 	video.addEventListener("loadedmetadata", () => {
-		// hiển thị video
 		video.play();
-
-		// thêm video vào khu vực hiển thị video
 		videoGrid.append(video);
 	});
 }
 
+
+// Xử lí các sự kiện của element
 const inviteButton = document.querySelector("#inviteButton");
 const muteButton = document.querySelector("#muteButton");
 const stopVideo = document.querySelector("#stopVideo");
