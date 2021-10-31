@@ -56,14 +56,14 @@ app.get('/:room', (req, res) => {
 io.on('connection', socket => {
 
 	// sự kiện tham gia phòng trong socket
-	socket.on("join-room", (roomId, userId) => {
+	socket.on("join-room", (roomId, userId, userName) => {
 		socket.join(roomId);
 		socket.to(roomId).emit("user-connected", userId);
 
 		// sự kiện chat message
 		socket.on("message", (message) => {
 			console.log(message);
-			socket.to(roomId).emit("createMessage", message, userName);
+			io.to(roomId).emit("createMessage", message, userName);
 		});
 
 		socket.on('disconnect', () => {
