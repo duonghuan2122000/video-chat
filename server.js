@@ -48,6 +48,12 @@ io.on('connection', socket => {
 	socket.on("join-room", (roomId, userId) => {
 		socket.join(roomId);
 		socket.to(roomId).emit("user-connected", userId);
+
+		// sự kiện chat message
+		socket.on("message", (message) => {
+			io.to(roomId).emit("createMessage", message, userName);
+		});
+
 		socket.on('disconnect', () => {
 			socket.to(roomId).emit("user-disconnected", userId);
 		})
