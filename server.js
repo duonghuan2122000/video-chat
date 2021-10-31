@@ -62,6 +62,7 @@ io.on('connection', socket => {
 
 		// sự kiện chat message
 		socket.on("message", (message) => {
+			console.log(message);
 			io.to(roomId).emit("createMessage", message, userName);
 		});
 

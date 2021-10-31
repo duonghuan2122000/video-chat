@@ -130,10 +130,11 @@ text.addEventListener("keydown", (e) => {
 });
 
 socket.on("createMessage", (message, userName) => {
+	console.log('message');
 	messages.innerHTML =
 		messages.innerHTML +
 		`<div class="message">
-        <b><i class="far fa-user-circle"></i> <span> ${userName === user ? "me" : userName
+        <b><i class="far fa-user-circle"></i> <span> ${userName === user ? "Tôi" : userName
 		}</span> </b>
         <span>${message}</span>
     </div>`;
