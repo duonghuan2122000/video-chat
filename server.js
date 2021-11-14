@@ -1,10 +1,16 @@
 const express = require('express');
 const http = require('http');
+const https = require('https');
+const fs = require('fs');
 const { v4: uuidv4 } = require('uuid');
 const { ExpressPeerServer } = require('peer');
 const PORT = process.env.PORT || 3000;
 const app = express();
-const server = http.createServer(app);
+const options = {
+	key: fs.readFileSync('key.pem'),
+	cert: fs.readFileSync('cert.pem')
+};
+const server = https.createServer(options, app);
 const io = require('socket.io')(server, {
 	cors: {
 		origin: "*"
@@ -13,7 +19,8 @@ const io = require('socket.io')(server, {
 const rooms = [];
 
 const peerServer = ExpressPeerServer(server, {
-	debug: true
+	debug: true,
+	ssl: {}
 });
 
 // thiết lập view engine cho ứng dụng
@@ -62,7 +69,6 @@ io.on('connection', socket => {
 
 		// sự kiện chat message
 		socket.on("message", (message) => {
-			console.log(message);
 			io.to(roomId).emit("createMessage", message, userName);
 		});
 

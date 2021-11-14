@@ -8,7 +8,7 @@ let userId;
 const peer = new Peer(undefined, {
 	path: "/peerjs",
 	host: "/",
-	port: 443
+	port: 3000
 });
 
 
@@ -44,11 +44,13 @@ navigator.mediaDevices.getUserMedia({
 
 		// bắt sự kiện user kết nối
 		socket.on("user-connected", userId => {
-			const call = peer.call(userId, stream);
-			const video = document.createElement("video");
-			call.on("stream", userVideoStream => {
-				addVideoStream({ video, stream: userVideoStream, userId });
-			});
+			setTimeout(() => {
+				const call = peer.call(userId, stream);
+				const video = document.createElement("video");
+				call.on("stream", userVideoStream => {
+					addVideoStream({ video, stream: userVideoStream, userId });
+				});
+			}, 1000);
 		});
 		// bắt sự kiện user ngắt kết nối
 		socket.on("user-disconnected", userId => {
@@ -56,7 +58,7 @@ navigator.mediaDevices.getUserMedia({
 			videoEls.forEach(video => video.remove());
 		});
 	}).catch(() => {
-		alert("Bật cam là F5 lại trang web");
+		alert("Bật cam và F5 lại trang web");
 	});
 
 
@@ -130,7 +132,6 @@ text.addEventListener("keydown", (e) => {
 });
 
 socket.on("createMessage", (message, userName) => {
-	console.log('message');
 	messages.innerHTML =
 		messages.innerHTML +
 		`<div class="message">
