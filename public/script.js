@@ -8,7 +8,7 @@ let userId;
 const peer = new Peer(undefined, {
 	path: "/peerjs",
 	host: "/",
-	port: 3000
+	port: 443
 });
 
 
